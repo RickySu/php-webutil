@@ -1,0 +1,17 @@
+{
+    "name": "rickysu/webutil",
+    "description": "a collection of web utilities.",
+    "require": {
+        "psr/http-message": "^1.0"
+    },
+    "autoload": {
+        "WebUtil\\": "src"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ricky Su",
+            "email": "ricky@ez2.us"
+        }
+    ]
+}
