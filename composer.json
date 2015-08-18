@@ -5,7 +5,9 @@
         "psr/http-message": "^1.0"
     },
     "autoload": {
-        "WebUtil\\": "src"
+        "psr-4": {
+            "WebUtil\\": "src"
+        }
     },
     "license": "MIT",
     "authors": [
