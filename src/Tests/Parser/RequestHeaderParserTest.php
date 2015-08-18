@@ -3,6 +3,35 @@ namespace WebUtil\Tests\Parser;
 
 class RequestHeaderParserTest extends \PHPUnit_Framework_TestCase
 {
+
+    public function test_forwardHook_nullHook()
+    {
+        $parser = new \WebUtil\Parser\RequestHeaderParser();
+        $reflactor = new \ReflectionClass($parser);
+        $method = $reflactor->getMethod('forwardHook');
+        $method->setAccessible(true);
+        $method->invoke($parser, 'some_data');
+        $this->assertTrue(true); // test no crash
+    }
+
+    public function test_forwardHook()
+    {
+        $parser1 = $this->getMock('WebUtil\\Parser\\RequestHeaderParser', array('feed'));
+        $parser1->expects($this->once())
+                ->method('feed')
+                ->willReturnCallback(function($data){
+                    $this->assertEquals('some_data', $data);
+                });
+
+        $parser2 = new \WebUtil\Parser\RequestHeaderParser();
+        $parser2->setNextHook($parser1);
+        $reflactor = new \ReflectionClass($parser2);
+        $method = $reflactor->getMethod('forwardHook');
+        $method->setAccessible(true);
+        $method->invoke($parser2, 'some_data');
+        $this->assertTrue(true); // test no crash
+    }
+
     public function test_feed()
     {
         $calls = 0;

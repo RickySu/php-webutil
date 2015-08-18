@@ -18,7 +18,7 @@ class RequestHeaderParser extends BaseParser
     protected function forwardHook($data)
     {
         if($this->nextHook){
-            call_user_func($this->nextHook, $data);
+            $this->nextHook->feed($data);
         }
     }
 
