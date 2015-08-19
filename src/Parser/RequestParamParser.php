@@ -36,16 +36,6 @@ class RequestParamParser extends BaseParser
         $this->parse();
     }
 
-    protected function parseSemicolonField($data)
-    {
-        $return = [];
-        foreach(explode(';', $data) as $field){
-            list($key, $val) = explode('=', $field);
-            $return[trim($key)] = urldecode(trim($val));
-        }
-        return $return;
-    }
-
     protected function parse()
     {
         if(!is_array($this->parseData)){
@@ -63,7 +53,7 @@ class RequestParamParser extends BaseParser
             return;
         }
 
-        if($this->parseContent($match[0], isset($match[1])?$match[1]:null, $header['content-length'])){
+        if($this->parseContent($contentType[0], isset($contentType[1])?$contentType[1]:null, $header['content-length'])){
             return;
         }
 

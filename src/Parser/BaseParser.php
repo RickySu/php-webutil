@@ -18,4 +18,14 @@ abstract class BaseParser implements ParserInterface
         list($this->callback, $callback) = array($callback, $this->callback);
         return $callback;
     }
+
+    protected function parseSemicolonField($data)
+    {
+        $return = [];
+        foreach(explode(';', $data) as $field){
+            list($key, $val) = explode('=', $field);
+            $return[trim($key)] = urldecode(trim($val));
+        }
+        return $return;
+    }
 }

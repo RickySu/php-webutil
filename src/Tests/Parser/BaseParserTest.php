@@ -1,7 +1,8 @@
 <?php
 namespace WebUtil\Tests\Parser;
+use WebUtil\Tests\BaseTestCase;
 
-class BaseParserTest extends \PHPUnit_Framework_TestCase
+class BaseParserTest extends BaseTestCase
 {
     public function test_setOnParsedCallback()
     {
@@ -23,5 +24,18 @@ class BaseParserTest extends \PHPUnit_Framework_TestCase
                 });
         $parser1->setNextHook($parser2);
         $this->assertEquals($parser2, $this->getObjectAttribute($parser1, 'nextHook'));
+    }
+
+    public function test_parseSemicolonField()
+    {
+        $originData = ' ak;;s!@#%%&%&*%^78';
+        $rawData = 'a=123 ; b = 456;c='. rawurlencode($originData);
+        $parser = $this->getMockForAbstractClass('WebUtil\\Parser\\BaseParser');
+        $result = $this->invokeObjectMethod($parser, 'parseSemicolonField', array($rawData));
+        $this->assertEquals(array(
+            'a' => '123',
+            'b' => '456',
+            'c' => $originData,
+        ), $result);
     }
 }

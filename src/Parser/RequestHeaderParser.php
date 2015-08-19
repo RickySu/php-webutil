@@ -35,12 +35,10 @@ class RequestHeaderParser extends BaseParser
 
     protected function parse()
     {
-
-        if(strlen($this->rawData) > static::MAX_HEADER_SIZE){
-            throw new Exception\ParserException('header too large.');
-        }
-
         if($this->spliteHeader($rawHeaders, $data) === false){
+            if(strlen($this->rawData) > static::MAX_HEADER_SIZE){
+                throw new Exception\ParserException('header too large.');
+            }
             return false;
         }
 
@@ -50,12 +48,39 @@ class RequestHeaderParser extends BaseParser
             $this->forwardHook($data);
         }
 
+        $parsedData = $this->parseCookie($this->parseQuery($this->parseHeader($rawHeaders)));
+
         if($this->callback){
-            call_user_func($this->callback, $this->parseHeader($rawHeaders));
+            call_user_func($this->callback, $parsedData);
         }
 
         $this->parsed = true;
         return true;
+    }
+
+    protected function parseQuery($parsedData)
+    {
+        if(($pos = strpos($parsedData['request']['uri'], '?')) === false){
+            return $parsedData;
+        }
+
+        parse_str(substr($parsedData['request']['uri'], $pos + 1), $result);
+
+        $parsedData['query'] = array(
+            'path' => substr($parsedData['request']['uri'], 0, $pos),
+            'param' => $result,
+        );
+//        parse_str($parsedData['request']['uri'], $result);
+//        print_r($result);die;
+        return $parsedData;
+    }
+
+    protected function parseCookie($parsedData)
+    {
+        if(isset($parsedData['header']['cookie'])){
+            $parsedData['header']['cookie'] = $this->parseSemicolonField($parsedData['header']['cookie']);
+        }
+        return $parsedData;
     }
 
     protected function parseHeader($rawHeaders)

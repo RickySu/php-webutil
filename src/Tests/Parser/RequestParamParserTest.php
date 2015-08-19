@@ -69,17 +69,5 @@ class RequestParamParserTest extends BaseTestCase
         $this->assertEquals('abc', $dataGlobal);
     }
 
-    public function test_parseSemicolonField()
-    {
-        $originData = ' ak;;s!@#%%&%&*%^78';
-        $rawData = 'a=123 ; b = 456;c='. rawurlencode($originData);
-        $parser = new \WebUtil\Parser\RequestParamParser();
-        $result = $this->invokeObjectMethod($parser, 'parseSemicolonField', array($rawData));
-        $this->assertEquals(array(
-            'a' => '123',
-            'b' => '456',
-            'c' => $originData,
-        ), $result);
-    }
 
 }
