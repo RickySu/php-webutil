@@ -70,8 +70,6 @@ class RequestHeaderParser extends BaseParser
             'path' => substr($parsedData['request']['uri'], 0, $pos),
             'param' => $result,
         );
-//        parse_str($parsedData['request']['uri'], $result);
-//        print_r($result);die;
         return $parsedData;
     }
 
