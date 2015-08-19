@@ -1,16 +1,14 @@
 <?php
 namespace WebUtil\Tests\Parser;
+use WebUtil\Tests\BaseTestCase;
 
-class RequestHeaderParserTest extends \PHPUnit_Framework_TestCase
+class RequestHeaderParserTest extends BaseTestCase
 {
 
     public function test_forwardHook_nullHook()
     {
         $parser = new \WebUtil\Parser\RequestHeaderParser();
-        $reflactor = new \ReflectionClass($parser);
-        $method = $reflactor->getMethod('forwardHook');
-        $method->setAccessible(true);
-        $method->invoke($parser, 'some_data');
+        $this->invokeObjectMethod($parser, 'forwardHook', array('some_data'));
         $this->assertTrue(true); // test no crash
     }
 
@@ -25,10 +23,7 @@ class RequestHeaderParserTest extends \PHPUnit_Framework_TestCase
 
         $parser2 = new \WebUtil\Parser\RequestHeaderParser();
         $parser2->setNextHook($parser1);
-        $reflactor = new \ReflectionClass($parser2);
-        $method = $reflactor->getMethod('forwardHook');
-        $method->setAccessible(true);
-        $method->invoke($parser2, 'some_data');
+        $this->invokeObjectMethod($parser2, 'forwardHook', array('some_data'));
         $this->assertTrue(true); // test no crash
     }
 
@@ -60,10 +55,7 @@ class RequestHeaderParserTest extends \PHPUnit_Framework_TestCase
                 ->willReturnCallback(function($dataForTest) use(&$data){
                     $this->assertEquals($data, $dataForTest);
                 });
-        $reflactor = new \ReflectionClass($parser);
-        $property = $reflactor->getProperty('parsed');
-        $property->setAccessible(true);
-        $property->setValue($parser, true);
+        $this->setObjectProperty($parser, 'parsed', true);
         $parser->feed($data);
     }
 
@@ -74,26 +66,16 @@ class RequestHeaderParserTest extends \PHPUnit_Framework_TestCase
     {
         $testData = str_pad('', 10000, '.');
         $parser = new \WebUtil\Parser\RequestHeaderParser();
-        $reflactor = new \ReflectionClass($parser);
-        $property = $reflactor->getProperty('rawData');
-        $property->setAccessible(true);
-        $property->setValue($parser, $testData);
-        $method = $reflactor->getMethod('parse');
-        $method->setAccessible(true);
-        $method->invoke($parser);
+        $this->setObjectProperty($parser, 'rawData', $testData);
+        $this->invokeObjectMethod($parser, 'parse');
     }
 
     public function test_parse_fail()
     {
         $testData = str_pad('', 100, '.');
         $parser = new \WebUtil\Parser\RequestHeaderParser();
-        $reflactor = new \ReflectionClass($parser);
-        $property = $reflactor->getProperty('rawData');
-        $property->setAccessible(true);
-        $property->setValue($parser, $testData);
-        $method = $reflactor->getMethod('parse');
-        $method->setAccessible(true);
-        $this->assertFalse($method->invoke($parser));
+        $this->setObjectProperty($parser, 'rawData', $testData);
+        $this->assertFalse($this->invokeObjectMethod($parser, 'parse'));
     }
 
     public function test_parse_success()
@@ -105,13 +87,8 @@ class RequestHeaderParserTest extends \PHPUnit_Framework_TestCase
             "Host: localhost\r\n".
             "Connection: Keep-Alive\r\n\r\n";
         $parser = new \WebUtil\Parser\RequestHeaderParser();
-        $reflactor = new \ReflectionClass($parser);
-        $property = $reflactor->getProperty('rawData');
-        $property->setAccessible(true);
-        $property->setValue($parser, $testData);
-        $method = $reflactor->getMethod('parse');
-        $method->setAccessible(true);
-        $this->assertTrue($method->invoke($parser));
+        $this->setObjectProperty($parser, 'rawData', $testData);
+        $this->assertTrue($this->invokeObjectMethod($parser, 'parse'));
     }
 
     public function test_splite_header_nodata()
@@ -123,10 +100,8 @@ class RequestHeaderParserTest extends \PHPUnit_Framework_TestCase
             "Host: localhost\r\n".
             "Connection: Keep-Alive\r\n\r\n";
         $parser = new \WebUtil\Parser\RequestHeaderParser();
+        $this->setObjectProperty($parser, 'rawData', $testData);
         $reflactor = new \ReflectionClass($parser);
-        $property = $reflactor->getProperty('rawData');
-        $property->setAccessible(true);
-        $property->setValue($parser, $testData);
         $method = $reflactor->getMethod('spliteHeader');
         $method->setAccessible(true);
         $this->assertGreaterThan(0, $method->invokeArgs($parser, array(&$rawHeader, &$data)));
@@ -144,10 +119,8 @@ class RequestHeaderParserTest extends \PHPUnit_Framework_TestCase
             "Connection: Keep-Alive\r\n\r\n";
         $additionalData = "additional body data";
         $parser = new \WebUtil\Parser\RequestHeaderParser();
+        $this->setObjectProperty($parser, 'rawData', "$testData$additionalData");
         $reflactor = new \ReflectionClass($parser);
-        $property = $reflactor->getProperty('rawData');
-        $property->setAccessible(true);
-        $property->setValue($parser, "$testData$additionalData");
         $method = $reflactor->getMethod('spliteHeader');
         $method->setAccessible(true);
         $this->assertGreaterThan(0, $method->invokeArgs($parser, array(&$rawHeader, &$data)));
@@ -170,13 +143,8 @@ class RequestHeaderParserTest extends \PHPUnit_Framework_TestCase
 "Cache-Control: max-age=0\r\n";
 
         $parser = new \WebUtil\Parser\RequestHeaderParser();
-        $reflactor = new \ReflectionClass($parser);
-        $property = $reflactor->getProperty('rawData');
-        $property->setAccessible(true);
-        $property->setValue($parser, $testData);
-        $method = $reflactor->getMethod('parseHeader');
-        $method->setAccessible(true);
-        $headers = $method->invoke($parser, $testData);
+        $this->setObjectProperty($parser, 'rawData', $testData);
+        $headers = $this->invokeObjectMethod($parser, 'parseHeader', array($testData));
         $this->assertEquals(array(
             'request' => array(
                 'method' => 'GET',
