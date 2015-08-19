@@ -39,9 +39,9 @@ class RequestParamParser extends BaseParser
     protected function parseSemicolonField($data)
     {
         $return = [];
-        foreach(explode($data, ':') as $field){
-            list($key, $val) = explode($field, '=');
-            $return[trim($key)] = trim($val);
+        foreach(explode(';', $data) as $field){
+            list($key, $val) = explode('=', $field);
+            $return[trim($key)] = urldecode(trim($val));
         }
         return $return;
     }
