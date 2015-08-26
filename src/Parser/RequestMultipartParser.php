@@ -5,6 +5,10 @@ use WebUtil\Exception;
 
 class RequestMultipartParser extends BaseParser
 {
+    const MULTIPART_FORM_START = 0;
+    const MULTIPART_FORM_END = 1;
+    const MULTIPART_FORM_DATA = 2;
+
     protected $rawData;
     protected $parsed = false;
     protected $parseData;
@@ -25,6 +29,9 @@ class RequestMultipartParser extends BaseParser
     {
         $this->callback = $prevHook->setOnParsedCallback(function($parseData){
             $this->parseData = $parseData;
+            if($this->callback){
+                call_user_func($this->callback, $this->parseData);
+            }
             $this->parse();
         });
     }
@@ -61,9 +68,6 @@ class RequestMultipartParser extends BaseParser
     {
         $rawHeader = str_replace("\r\n", ';', $rawHeader);
         foreach(explode(';', $rawHeader) as $column){
-            if(trim($column) == ''){
-                continue;
-            }
             if(preg_match('/(.+?):\s*(.+)/i', $column, $match)){
                 $this->boundaryInited[trim($match[1])] = trim($match[2]);
             }
@@ -72,46 +76,67 @@ class RequestMultipartParser extends BaseParser
             }
 
         }
-        //echo "$rawHeader\n";
     }
 
     protected function sendData($data)
     {
         if($this->boundaryInited === false){
-            $this->boundaryheader.=$data;
+            $this->boundaryheader .= $data;
             if(($pos = strpos($this->boundaryheader, "\r\n\r\n"))!==false){
                 $header = $this->parseBoundaryHeader(substr($this->boundaryheader, 0, $pos));
+                $this->callMultipartDataCallback(self::MULTIPART_FORM_START);
                 $data = substr($this->boundaryheader, $pos + 4);
                 $this->boundaryheader = '';
             }
         }
-        if($this->multipartDataCallback){
-            call_user_func($this->multipartDataCallback, $this->boundaryInited, $data);
+        $this->callMultipartDataCallback(self::MULTIPART_FORM_DATA, $data);
+    }
+
+    public function callMultipartDataCallback($status, $data = null)
+    {
+        if($this->multipartDataCallback && $this->boundaryInited){
+            call_user_func($this->multipartDataCallback, $this->boundaryInited, $status, $data);
         }
     }
 
     protected function flushBufferData()
     {
+        $bondaryNl = "{$this->boundary}\r\n";
+        $endboundary = "{$this->boundary}--";
+        $bondaryNlSize = strlen($bondaryNl);
         while(true){
-            if(strlen($this->rawData) < $this->boundarySize){
+            if(strlen($this->rawData) < $bondaryNlSize){
                 return;
             }
 
-            $pos = strpos($this->rawData, $this->boundary);
-            if($pos === false){
-                $this->sendData(substr($this->rawData, 0, -$this->boundarySize));
-                $this->rawData = substr($this->rawData, -$this->boundarySize);
-                return;
-            }
-            if($pos > 0){
-                $this->sendData(substr($this->rawData, 0, $pos));
-            }
-            $this->boundaryInited = false;
-            $this->rawData = substr($this->rawData, $pos + $this->boundarySize);
-            if(strpos($this->rawData, '--') === 0){
+            $pos = strpos($this->rawData, $bondaryNl);
+            $endPos = strpos($this->rawData, $endboundary);
+
+            if($endPos !== false){
+                $this->rawData = substr($this->rawData, 0, $endPos - 2);
                 $this->parsed = true;
-                return;
             }
+
+            if(!$this->parsed){
+                if($pos === false){
+                    $this->sendData(substr($this->rawData, 0, -$bondaryNlSize));
+                    $this->rawData = substr($this->rawData, -$bondaryNlSize);
+                    return;
+                }
+
+                if($pos > 0){
+                    $this->sendData(substr($this->rawData, 0, $pos - 2));
+                }
+                $this->rawData = substr($this->rawData, $pos + $bondaryNlSize);
+            }
+
+            if($this->parsed){
+                $this->sendData($this->rawData);
+                $this->rawData = null;
+            }
+
+            $this->callMultipartDataCallback(self::MULTIPART_FORM_END);
+            $this->boundaryInited = false;
         }
     }
 
