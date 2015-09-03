@@ -219,4 +219,103 @@ class RequestParamParserTest extends BaseTestCase
         $result = $this->invokeObjectMethod($parser, 'parseContentType', array('application/json;charset=utf-8'));
         $this->assertEquals(array('application/json', 'charset=utf-8'), $result);
     }
+
+    public function test_parseContent_urlencode()
+    {
+        $parser = $this->getMock('WebUtil\\Parser\\RequestParamParser', array('parseUrlEncode', 'setParsed'));
+        $parser->expects($this->once())
+                ->method('parseUrlEncode')
+                ->willReturnCallback(function($data){
+                    $this->assertEquals('raw_url_enc_data', $data);
+                    return 'url_dec_data';
+                });
+        $parser->expects($this->once())
+                ->method('setParsed')
+                ->willReturn(null);
+        $this->setObjectProperty($parser, 'rawData', 'raw_url_enc_data');
+        $this->assertTrue($this->invokeObjectMethod($parser, 'parseContent', array(
+            'application/x-www-form-urlencoded',
+            null,
+            strlen('raw_url_enc_data'),
+        )));
+        $this->assertEquals('raw_url_enc_data', $this->getObjectAttribute($parser, 'parseData')['content']);
+        $this->assertEquals('url_dec_data', $this->getObjectAttribute($parser, 'parseData')['content-parsed']);
+    }
+
+    public function test_parseContent_jsonencode()
+    {
+        $parser = $this->getMock('WebUtil\\Parser\\RequestParamParser', array('parseJSONEncode', 'setParsed'));
+        $parser->expects($this->once())
+                ->method('parseJSONEncode')
+                ->willReturnCallback(function($data){
+                    $this->assertEquals('raw_json_enc_data', $data);
+                    return 'json_dec_data';
+                });
+        $parser->expects($this->once())
+                ->method('setParsed')
+                ->willReturn(null);
+        $this->setObjectProperty($parser, 'rawData', 'raw_json_enc_data');
+        $this->assertTrue($this->invokeObjectMethod($parser, 'parseContent', array(
+            'application/json',
+            'charset=utf-8',
+            strlen('raw_json_enc_data'),
+        )));
+        $this->assertEquals('raw_json_enc_data', $this->getObjectAttribute($parser, 'parseData')['content']);
+        $this->assertEquals('json_dec_data', $this->getObjectAttribute($parser, 'parseData')['content-parsed']);
+    }
+
+    public function test_parseContent_multipart()
+    {
+        $parser = $this->getMock('WebUtil\\Parser\\RequestParamParser', array('forwardHook', 'setParsed'));
+        $parser->expects($this->once())
+                ->method('forwardHook')
+                ->willReturnCallback(function($data){
+                    $this->assertEquals('raw_multipart_enc_data', $data);
+                    return null;
+                });
+        $parser->expects($this->once())
+                ->method('setParsed')
+                ->willReturn(null);
+        $this->setObjectProperty($parser, 'rawData', 'raw_multipart_enc_data');
+        $this->assertTrue($this->invokeObjectMethod($parser, 'parseContent', array(
+            'multipart/form-data',
+            'boundary=1234567',
+            strlen('raw_multipart_enc_data'),
+        )));
+        $this->assertEquals('1234567', $this->getObjectAttribute($parser, 'parseData')['content-boundary']);
+    }
+
+    public function test_parseContent_unknown()
+    {
+        $parser = new RequestParamParser();
+        $this->assertFalse($this->invokeObjectMethod($parser, 'parseContent', array(
+            'unknown/unknown',
+            null,
+            strlen('raw_multipart_enc_data'),
+        )));
+    }
+
+    public function test_parseJSONEncode()
+    {
+        $parser = new RequestParamParser();
+        $data = array(
+            'a' => 'b',
+            'b' => array(
+                'a' => 'a',
+                'b' => 'b',
+            ),
+        );
+        $this->assertEquals($data, $this->invokeObjectMethod($parser, 'parseJSONEncode', array(json_encode($data))));
+    }
+
+    public function test_parseUrlEncode()
+    {
+        $parser = new RequestParamParser();
+        $data = array(
+            'a' => 'a',
+            'b' => 'b',
+            'c' => 'zbcd!@#@%$2345&',
+        );
+        $this->assertEquals($data, $this->invokeObjectMethod($parser, 'parseUrlEncode', array(http_build_query($data))));
+    }
 }
