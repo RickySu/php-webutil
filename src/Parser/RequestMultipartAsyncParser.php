@@ -3,7 +3,7 @@ namespace WebUtil\Parser;
 
 use WebUtil\Exception;
 
-class RequestMultipartParser extends BaseParser
+class RequestMultipartAsyncParser extends BaseParser
 {
     const MULTIPART_FORM_START = 0;
     const MULTIPART_FORM_END = 1;
