@@ -205,4 +205,18 @@ class RequestParamParserTest extends BaseTestCase
         $this->assertTrue($this->getObjectAttribute($parser, 'parsed'));
         $this->assertTrue($calls);
     }
+
+    public function test_parseContentType_no_part()
+    {
+        $parser = new RequestParamParser();
+        $result = $this->invokeObjectMethod($parser, 'parseContentType', array('application/x-www-form-urlencoded'));
+        $this->assertEquals(array('application/x-www-form-urlencoded', null), $result);
+    }
+
+    public function test_parseContentType_with_part()
+    {
+        $parser = new RequestParamParser();
+        $result = $this->invokeObjectMethod($parser, 'parseContentType', array('application/json;charset=utf-8'));
+        $this->assertEquals(array('application/json', 'charset=utf-8'), $result);
+    }
 }
