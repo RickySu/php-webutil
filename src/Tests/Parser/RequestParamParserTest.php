@@ -128,4 +128,55 @@ class RequestParamParserTest extends BaseTestCase
         $this->invokeObjectMethod($parser, 'parse');
     }
 
+    public function test_parse_parseContent()
+    {
+        $parser = $this->getMock('WebUtil\\Parser\\RequestParamParser', array('forwardHook', 'setParsed', 'parseContentType', 'parseContent'));
+        $parser->expects($this->never())
+                ->method('forwardHook')
+                ->willReturn(null);
+        $parser->expects($this->never())
+                ->method('setParsed')
+                ->willReturn(null);
+        $parser->expects($this->once())
+                ->method('parseContentType')
+                ->willReturn(array('application/json', 'charset=utf-8'));
+        $parser->expects($this->once())
+                ->method('parseContent')
+                ->willReturn(true);
+        $this->setObjectProperty($parser, 'parseData', array(
+            'header' => array(
+                'content-length' => 5,
+                'content-type' => '',
+            )
+        ));
+        $this->setObjectProperty($parser, 'rawData', '12345');
+        $this->invokeObjectMethod($parser, 'parse');
+    }
+
+
+    public function test_parse()
+    {
+        $parser = $this->getMock('WebUtil\\Parser\\RequestParamParser', array('forwardHook', 'setParsed', 'parseContentType', 'parseContent'));
+        $parser->expects($this->once())
+                ->method('forwardHook')
+                ->willReturn(null);
+        $parser->expects($this->once())
+                ->method('setParsed')
+                ->willReturn(null);
+        $parser->expects($this->once())
+                ->method('parseContentType')
+                ->willReturn(array('application/json', 'charset=utf-8'));
+        $parser->expects($this->once())
+                ->method('parseContent')
+                ->willReturn(false);
+        $this->setObjectProperty($parser, 'parseData', array(
+            'header' => array(
+                'content-length' => 5,
+                'content-type' => '',
+            )
+        ));
+        $this->setObjectProperty($parser, 'rawData', '12345');
+        $this->invokeObjectMethod($parser, 'parse');
+
+    }
 }
