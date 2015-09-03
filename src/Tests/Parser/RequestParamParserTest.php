@@ -1,13 +1,18 @@
 <?php
+
 namespace WebUtil\Tests\Parser;
+
 use WebUtil\Tests\BaseTestCase;
+use WebUtil\Parser\RequestParamParser;
 
 class RequestParamParserTest extends BaseTestCase
 {
 
     public function test_initHook()
     {
-        $originCallback = function(){};
+        $originCallback = function() {
+
+        };
         $prevParser = $this->getMockForAbstractClass('WebUtil\\Parser\\BaseParser');
         $parser = $this->getMock('WebUtil\\Parser\\RequestParamParser', array('parse'));
         $parser->expects($this->once())
@@ -27,7 +32,7 @@ class RequestParamParserTest extends BaseTestCase
         $parser1 = $this->getMock('WebUtil\\Parser\\RequestParamParser', array('feed'));
         $parser1->expects($this->once())
                 ->method('feed')
-                ->willReturn(function($data){
+                ->willReturn(function($data) {
                     $this->assertEquals('some_data', $data);
                 });
         $parser = new \WebUtil\Parser\RequestParamParser();
@@ -56,7 +61,7 @@ class RequestParamParserTest extends BaseTestCase
         $parser = $this->getMock('WebUtil\\Parser\\RequestParamParser', array('parse', 'forwardHook'));
         $parser->expects($this->exactly(3))
                 ->method('forwardHook')
-                ->willReturnCallback(function($data) use(&$dataGlobal){
+                ->willReturnCallback(function($data) use(&$dataGlobal) {
                     $dataGlobal.=$data;
                 });
         $parser->expects($this->never())
@@ -69,5 +74,58 @@ class RequestParamParserTest extends BaseTestCase
         $this->assertEquals('abc', $dataGlobal);
     }
 
+    public function test_parse_no_content_length()
+    {
+        $parser = $this->getMock('WebUtil\\Parser\\RequestParamParser', array('forwardHook', 'setParsed'));
+        $parser->expects($this->never())
+                ->method('forwardHook')
+                ->willReturn(null);
+        $parser->expects($this->never())
+                ->method('setParsed')
+                ->willReturn(null);
+        $this->setObjectProperty($parser, 'parseData', array('header' => array()));
+        $this->invokeObjectMethod($parser, 'parse');
+    }
+
+    /**
+     * @expectedException WebUtil\Exception\ParserException
+     */
+    public function test_parse_content_length_too_large()
+    {
+        $parser = $this->getMock('WebUtil\\Parser\\RequestParamParser', array('forwardHook', 'setParsed'));
+        $parser->expects($this->never())
+                ->method('forwardHook')
+                ->willReturn(null);
+        $parser->expects($this->never())
+                ->method('setParsed')
+                ->willReturn(null);
+        $this->setObjectProperty($parser, 'parseData', array(
+            'header' => array('content-length' => 5)
+        ));
+        $this->setObjectProperty($parser, 'rawData', '123456');
+        $this->invokeObjectMethod($parser, 'parse');
+    }
+
+    public function test_parse_bad_content_type()
+    {
+        $parser = $this->getMock('WebUtil\\Parser\\RequestParamParser', array('forwardHook', 'setParsed', 'parseContentType'));
+        $parser->expects($this->never())
+                ->method('forwardHook')
+                ->willReturn(null);
+        $parser->expects($this->never())
+                ->method('setParsed')
+                ->willReturn(null);
+        $parser->expects($this->once())
+                ->method('parseContentType')
+                ->willReturn(false);
+        $this->setObjectProperty($parser, 'parseData', array(
+            'header' => array(
+                'content-length' => 5,
+                'content-type' => '',
+            )
+        ));
+        $this->setObjectProperty($parser, 'rawData', '12345');
+        $this->invokeObjectMethod($parser, 'parse');
+    }
 
 }
