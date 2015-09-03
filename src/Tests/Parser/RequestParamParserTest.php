@@ -177,6 +177,32 @@ class RequestParamParserTest extends BaseTestCase
         ));
         $this->setObjectProperty($parser, 'rawData', '12345');
         $this->invokeObjectMethod($parser, 'parse');
+    }
 
+    public function test_setParsed_no_callback()
+    {
+        $parser = new RequestParamParser();
+        $this->setObjectProperty($parser, 'callback', null);
+        $this->setObjectProperty($parser, 'parseData', 'parse_data');
+        $this->setObjectProperty($parser, 'parsed', false);
+        $this->invokeObjectMethod($parser, 'setParsed');
+        $this->assertEquals(null, $this->getObjectAttribute($parser, 'parseData'));
+        $this->assertTrue($this->getObjectAttribute($parser, 'parsed'));
+    }
+
+    public function test_setParsed_with_callback()
+    {
+        $calls = false;
+        $parser = new RequestParamParser();
+        $this->setObjectProperty($parser, 'callback', function($parseData) use(&$calls){
+            $this->assertEquals('parse_data', $parseData);
+            $calls = true;
+        });
+        $this->setObjectProperty($parser, 'parseData', 'parse_data');
+        $this->setObjectProperty($parser, 'parsed', false);
+        $this->invokeObjectMethod($parser, 'setParsed');
+        $this->assertEquals(null, $this->getObjectAttribute($parser, 'parseData'));
+        $this->assertTrue($this->getObjectAttribute($parser, 'parsed'));
+        $this->assertTrue($calls);
     }
 }
