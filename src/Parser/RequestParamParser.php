@@ -44,7 +44,7 @@ class RequestParamParser extends BaseParser
         }
 
         if(strlen($this->rawData) > $header['content-length']){
-            throw new Exception\ParserException('content too large.');
+            throw new Exception\ParserException('content too large.', Exception\ParserException::CONTENT_TOO_LARGE);
         }
 
         if(($contentType = $this->parseContentType($header['content-type'])) === false){

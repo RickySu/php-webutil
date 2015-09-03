@@ -37,7 +37,7 @@ class RequestHeaderParser extends BaseParser
     {
         if($this->spliteHeader($rawHeaders, $data) === false){
             if(strlen($this->rawData) > static::MAX_HEADER_SIZE){
-                throw new Exception\ParserException('header too large.');
+                throw new Exception\ParserException('header too large.', Exception\ParserException::HEADER_TOO_LARGE);
             }
             return false;
         }
@@ -60,14 +60,14 @@ class RequestHeaderParser extends BaseParser
 
     protected function parseQuery($parsedData)
     {
-        if(($pos = strpos($parsedData['request']['uri'], '?')) === false){
+        if(($pos = strpos($parsedData['request']['target'], '?')) === false){
             return $parsedData;
         }
 
-        parse_str(substr($parsedData['request']['uri'], $pos + 1), $result);
+        parse_str(substr($parsedData['request']['target'], $pos + 1), $result);
 
         $parsedData['query'] = array(
-            'path' => substr($parsedData['request']['uri'], 0, $pos),
+            'path' => substr($parsedData['request']['target'], 0, $pos),
             'param' => $result,
         );
         return $parsedData;
@@ -89,7 +89,7 @@ class RequestHeaderParser extends BaseParser
                 if(preg_match('/^(\w+)\s+(.+)\s+(\w+)\/(\d+\.\d+)$/i', $rawHeader, $match)){
                     $headers['request'] = array(
                         'method' => $match[1],
-                        'uri' => $match[2],
+                        'target' => $match[2],
                         'protocol' => $match[3],
                         'protocol-version' => $match[4],
                     );

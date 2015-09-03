@@ -148,7 +148,7 @@ class RequestHeaderParserTest extends BaseTestCase
         $this->assertEquals(array(
             'request' => array(
                 'method' => 'GET',
-                'uri' => '/test.php?a=123&b=alshdkhsa%12',
+                'target' => '/test.php?a=123&b=alshdkhsa%12',
                 'protocol' => 'HTTP',
                 'protocol-version' => '1.1',
             ),
