@@ -1,9 +1,9 @@
 <?php
 namespace WebUtil\Tests\Http;
 use WebUtil\Tests\BaseTestCase;
-use WebUtil\Http\ServerRequest;
+use WebUtil\Http\Request\ServerRequest;
 
-class RequestTest extends BaseTestCase
+class ServerRequestTest extends BaseTestCase
 {
     public function test_withCookieParams()
     {
