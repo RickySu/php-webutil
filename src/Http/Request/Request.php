@@ -58,14 +58,11 @@ class Request implements RequestInterface
 
     public function getHeader($name)
     {
-        $name = strtolower($name);
         return isset($this->headers[$name]) ? $this->headers[$name] : null;
     }
 
     public function getHeaderLine($name)
-    {
-        $name = strtolower($name);
-        $header = isset($this->headers[$name]) ? $this->headers[$name] : null;
+    {   $header = isset($this->headers[$name]) ? $this->headers[$name] : null;
         if ($header === null) {
             return null;
         }
@@ -99,7 +96,7 @@ class Request implements RequestInterface
 
     public function hasHeader($name)
     {
-        return isset($this->headers[strtolower($name)]);
+        return isset($this->headers[$name]);
     }
 
     public function withAddedHeader($name, $value)
@@ -114,7 +111,8 @@ class Request implements RequestInterface
 
     public function withHeader($name, $value)
     {
-        $this->headers[strtolower($name)] = $value;
+        $name = implode('-', array_map('ucfirst', explode('-', $name)));
+        $this->headers[$name] = $value;
     }
 
     public function withMethod($method)
@@ -139,7 +137,7 @@ class Request implements RequestInterface
 
     public function withoutHeader($name)
     {
-        unset($this->headers[strtolower($name)]);
+        unset($this->headers[$name]);
     }
 
 }

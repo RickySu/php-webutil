@@ -15,7 +15,7 @@ class ContentStream implements StreamInterface
 
     public function __toString()
     {
-        return $this->close();
+        return $this->content;
     }
 
     public function close()
