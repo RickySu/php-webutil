@@ -33,6 +33,7 @@ class Request implements RequestInterface
             'path' => $array['query']['path'],
             'query' => substr($array['request']['target'], strlen($array['query']['path']) + 1),
         )));
+        $request->withServer($server);
         $request->withRequestTarget($array['request']['target']);
         if(isset($array['content'])){
             $request->withBody(new ContentStream($array['content']));
@@ -42,7 +43,7 @@ class Request implements RequestInterface
 
     public function withServer($server)
     {
-        $this->server;
+        $this->server = $server;
     }
 
     public function getServer()
