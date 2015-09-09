@@ -11,7 +11,6 @@ class Request implements RequestInterface
 {
     protected $body;
     protected $headers;
-    protected $method;
     protected $request;
     protected $uri;
     protected $server;
@@ -20,7 +19,7 @@ class Request implements RequestInterface
     /**
      *
      * @param array $array
-     * @return static
+     * @return Request
      */
     static public function createFromArray(array $array, array $server = array())
     {
@@ -76,7 +75,7 @@ class Request implements RequestInterface
 
     public function getMethod()
     {
-        return $this->method;
+        return $this->request['method'];
     }
 
     public function getProtocolVersion()
@@ -117,7 +116,7 @@ class Request implements RequestInterface
 
     public function withMethod($method)
     {
-        $this->method = $method;
+        $this->request['method'] = $method;
     }
 
     public function withProtocolVersion($version)

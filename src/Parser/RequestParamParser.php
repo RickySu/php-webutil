@@ -40,6 +40,8 @@ class RequestParamParser extends BaseParser
         $header = $this->parseData['header'];
 
         if(!isset($header['content-length'])){
+            $this->forwardHook($this->rawData);
+            $this->setParsed();
             return;
         }
 
@@ -55,7 +57,7 @@ class RequestParamParser extends BaseParser
             return;
         }
 
-        $this->forwardHook($this->parseData);
+        $this->forwardHook($this->rawData);
         $this->setParsed();
     }
 

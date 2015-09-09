@@ -10,7 +10,7 @@ class ContentStream implements StreamInterface
 
     public function __construct($content = '')
     {
-        $this->content = $content;
+        $this->content = (string)$content;
     }
 
     public function __toString()

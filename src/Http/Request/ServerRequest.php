@@ -21,9 +21,8 @@ class ServerRequest extends Request implements ServerRequestInterface
         $request = parent::createFromArray($array, $server);
         $request->withRequest($array['request']);
         $request->withHeaders($array['header']);
-        $request->withCookieParams($array['header']['cookie']);
         $request->withQueryParams($array['query']);
-        $request->withParsedBody($array['content-parsed']);
+        $request->withParsedBody(isset($array['content-parsed'])?$array['content-parsed']:array());
         return $request;
     }
 
@@ -35,7 +34,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     public function withHeaders(array $headers)
     {
         $this->headers = $headers;
-        $this->withCookieParams($headers['cookie']);
+        $this->withCookieParams(isset($headers['cookie'])?$headers['cookie']:array());
     }
 
     public function getAttribute($name, $default = null)
@@ -60,7 +59,7 @@ class ServerRequest extends Request implements ServerRequestInterface
 
     public function getQueryParams()
     {
-        return $this->query['params'];
+        return $this->query['params']['param'];
     }
 
     public function getServerParams()

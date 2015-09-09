@@ -12,7 +12,7 @@ class RouteFactory
      * @param strig $class
      * @return RouteInterface
      */
-    static public function create($class)
+    static public function create($class = 'FastRoute')
     {
         $className = '\\WebUtil\\Route\\'.$class;
         return new $className();

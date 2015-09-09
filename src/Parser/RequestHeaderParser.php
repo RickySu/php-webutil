@@ -61,6 +61,11 @@ class RequestHeaderParser extends BaseParser
     protected function parseQuery($parsedData)
     {
         if(($pos = strpos($parsedData['request']['target'], '?')) === false){
+            $parsedData['query'] = array(
+                'path' => $parsedData['request']['target'],
+                'param' => array(),
+            );
+
             return $parsedData;
         }
 

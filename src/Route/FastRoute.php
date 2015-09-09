@@ -16,7 +16,8 @@ class FastRoute implements RouteInterface
 
     public function match($method, $uri)
     {
-        if(!($match = $this->dispatcher->dispatch($method, $uri))){
+        $match = $this->dispatcher->dispatch($method, $uri);
+        if($match[0] == 0){
             return null;
         }
         return array($match[1], $match[2]);
