@@ -77,10 +77,10 @@ class RequestParamParserTest extends BaseTestCase
     public function test_parse_no_content_length()
     {
         $parser = $this->getMock('WebUtil\\Parser\\RequestParamParser', array('forwardHook', 'setParsed'));
-        $parser->expects($this->never())
+        $parser->expects($this->once())
                 ->method('forwardHook')
                 ->willReturn(null);
-        $parser->expects($this->never())
+        $parser->expects($this->once())
                 ->method('setParsed')
                 ->willReturn(null);
         $this->setObjectProperty($parser, 'parseData', array('header' => array()));
