@@ -12,6 +12,10 @@ class R3 implements RouteInterface
 
     public function __construct()
     {
+        if(!class_exists('\\WebUtil\\R3')){
+            throw new \Exception('pleace load R3 extension!');
+        }
+
         $this->r3 = new BaseR3();
         $this->methods = array(
             self::METHOD_GET => BaseR3::METHOD_GET,
