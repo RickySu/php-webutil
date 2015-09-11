@@ -19,10 +19,10 @@ class ServerRequest extends Request implements ServerRequestInterface
     static public function createFromArray(array $array, array $server = array())
     {
         $request = parent::createFromArray($array, $server);
-        $request->withRequest($array['request']);
-        $request->withHeaders($array['header']);
-        $request->withQueryParams($array['query']);
-        $request->withParsedBody(isset($array['content-parsed'])?$array['content-parsed']:array());
+        $request->withRequest($array['Request']);
+        $request->withHeaders($array['Header']);
+        $request->withQueryParams($array['Query']);
+        $request->withParsedBody(isset($array['Content-Parsed'])?$array['Content-Parsed']:array());
         return $request;
     }
 
@@ -34,7 +34,7 @@ class ServerRequest extends Request implements ServerRequestInterface
     public function withHeaders(array $headers)
     {
         $this->headers = $headers;
-        $this->withCookieParams(isset($headers['cookie'])?$headers['cookie']:array());
+        $this->withCookieParams(isset($headers['Cookie'])?$headers['Cookie']:array());
     }
 
     public function getAttribute($name, $default = null)
@@ -59,7 +59,7 @@ class ServerRequest extends Request implements ServerRequestInterface
 
     public function getQueryParams()
     {
-        return $this->query['params']['param'];
+        return $this->query['Params']['Param'];
     }
 
     public function getServerParams()
@@ -94,7 +94,7 @@ class ServerRequest extends Request implements ServerRequestInterface
 
     public function withQueryParams(array $query)
     {
-        $this->query['params'] = $query;
+        $this->query['Params'] = $query;
     }
 
     public function withUploadedFiles(array $uploadedFiles)
@@ -104,7 +104,7 @@ class ServerRequest extends Request implements ServerRequestInterface
 
     public function withoutAttribute($name)
     {
-        unset($this->attributes['name']);
+        unset($this->attributes[$name]);
     }
 
 }

@@ -24,19 +24,19 @@ class Request implements RequestInterface
     static public function createFromArray(array $array, array $server = array())
     {
         $request = new static();
-        $request->withRequestTarget($array['request']['target']);
+        $request->withRequestTarget($array['Request']['Target']);
         $request->withServer($server);
         $request->withUri(Uri::createFromArray(array(
-            'schema' => $server['https']?'https':'http',
-            'host' => $server['server-name'],
-            'port' => $server['server-port'],
-            'path' => $array['query']['path'],
-            'query' => substr($array['request']['target'], strlen($array['query']['path']) + 1),
+            'Schema' => $server['Https']?'https':'http',
+            'Host' => $server['Server-Name'],
+            'Port' => $server['Server-Port'],
+            'Path' => $array['Query']['Path'],
+            'Query' => substr($array['Request']['Target'], strlen($array['Query']['Path']) + 1),
         )));
         $request->withServer($server);
-        $request->withRequestTarget($array['request']['target']);
-        if(isset($array['content'])){
-            $request->withBody(new ContentStream($array['content']));
+        $request->withRequestTarget($array['Request']['Target']);
+        if(isset($array['Content'])){
+            $request->withBody(new ContentStream($array['Content']));
         }
         return $request;
     }
@@ -111,18 +111,17 @@ class Request implements RequestInterface
 
     public function withHeader($name, $value)
     {
-        $name = implode('-', array_map('ucfirst', explode('-', $name)));
         $this->headers[$name] = $value;
     }
 
     public function withMethod($method)
     {
-        $this->request['method'] = $method;
+        $this->request['Method'] = $method;
     }
 
     public function withProtocolVersion($version)
     {
-        $this->request['protocol-version'] = $version;
+        $this->request['Protocol-Version'] = $version;
     }
 
     public function withRequestTarget($requestTarget)

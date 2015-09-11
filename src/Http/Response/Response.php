@@ -213,7 +213,6 @@ class Response implements ResponseInterface
 
     public function withHeader($name, $value)
     {
-        $name = implode('-', array_map('ucfirst', explode('-', $name)));
         $this->headers[$name] = $value;
     }
 
@@ -240,7 +239,6 @@ class Response implements ResponseInterface
         if(!$this->prepared){
             $this->prepared = true;
             if($this->body === null){
-                echo "aas";die;
                 $this->withoutHeader('Content-Type');
                 $this->withoutHeader('Content-Length');
             }
