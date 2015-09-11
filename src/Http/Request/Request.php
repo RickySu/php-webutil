@@ -76,12 +76,12 @@ class Request implements RequestInterface
 
     public function getMethod()
     {
-        return $this->request['method'];
+        return $this->request['Method'];
     }
 
     public function getProtocolVersion()
     {
-        return $this->request['protocol-version'];
+        return $this->request['Protocol-Version'];
     }
 
     public function getRequestTarget()
