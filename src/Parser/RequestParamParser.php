@@ -37,23 +37,23 @@ class RequestParamParser extends BaseParser
 
     protected function parse()
     {
-        $header = $this->parseData['header'];
+        $header = $this->parseData['Header'];
 
-        if(!isset($header['content-length'])){
+        if(!isset($header['Content-Length'])){
             $this->forwardHook($this->rawData);
             $this->setParsed();
             return;
         }
 
-        if(strlen($this->rawData) > $header['content-length']){
+        if(strlen($this->rawData) > $header['Content-Length']){
             throw new Exception\ParserException('content too large.', Exception\ParserException::CONTENT_TOO_LARGE);
         }
 
-        if(($contentType = $this->parseContentType($header['content-type'])) === false){
+        if(($contentType = $this->parseContentType($header['Content-Type'])) === false){
             return;
         }
 
-        if($this->parseContent($contentType[0], $contentType[1], $header['content-length'])){
+        if($this->parseContent($contentType[0], $contentType[1], $header['Content-Length'])){
             return;
         }
 
@@ -83,20 +83,20 @@ class RequestParamParser extends BaseParser
         switch($type){
             case 'application/x-www-form-urlencoded':
                 if($contentLength == $rawDataLength){
-                    $this->parseData['content'] = $this->rawData;
-                    $this->parseData['content-parsed'] = $this->parseUrlEncode($this->rawData);
+                    $this->parseData['Content'] = $this->rawData;
+                    $this->parseData['Content-Parsed'] = $this->parseUrlEncode($this->rawData);
                     $this->setParsed();
                 }
                 return true;
             case 'application/json':
                 if($contentLength == $rawDataLength){
-                    $this->parseData['content'] = $this->rawData;
-                    $this->parseData['content-parsed'] = $this->parseJSONEncode($this->rawData);
+                    $this->parseData['Content'] = $this->rawData;
+                    $this->parseData['Content-Parsed'] = $this->parseJSONEncode($this->rawData);
                     $this->setParsed();
                 }
                 return true;
             case 'multipart/form-data':
-                $this->parseData['content-boundary'] = $extraDatasParsed['boundary'];
+                $this->parseData['Content-Boundary'] = $extraDatasParsed['boundary'];
                 $this->forwardHook($this->rawData);
                 $this->setParsed();
                 return true;

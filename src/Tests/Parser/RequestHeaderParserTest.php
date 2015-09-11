@@ -146,22 +146,22 @@ class RequestHeaderParserTest extends BaseTestCase
         $this->setObjectProperty($parser, 'rawData', $testData);
         $headers = $this->invokeObjectMethod($parser, 'parseHeader', array($testData));
         $this->assertEquals(array(
-            'request' => array(
-                'method' => 'GET',
-                'target' => '/test.php?a=123&b=alshdkhsa%12',
-                'protocol' => 'HTTP',
-                'protocol-version' => '1.1',
+            'Request' => array(
+                'Method' => 'GET',
+                'Target' => '/test.php?a=123&b=alshdkhsa%12',
+                'Protocol' => 'HTTP',
+                'Protocol-Version' => '1.1',
             ),
-            'header' => array(
-                'host' => 'localhost',
-                'user-agent' => 'Mozilla/5.0 Firefox',
-                'accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                'accept-language' => 'zh-TW,en-US;q=0.7,en;q=0.3',
-                'accept-encoding' => 'gzip, deflate',
-                'dnt' => '1',
-                'cookie' => 'device_view=mobile;_gat=1',
-                'connection' => 'keep-alive',
-                'cache-control' => 'max-age=0',
+            'Header' => array(
+                'Host' => 'localhost',
+                'User-Agent' => 'Mozilla/5.0 Firefox',
+                'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'Accept-Language' => 'zh-TW,en-US;q=0.7,en;q=0.3',
+                'Accept-Encoding' => 'gzip, deflate',
+                'DNT' => '1',
+                'Cookie' => 'device_view=mobile;_gat=1',
+                'Connection' => 'keep-alive',
+                'Cache-Control' => 'max-age=0',
             ),
         ), $headers);
     }

@@ -60,28 +60,28 @@ class RequestHeaderParser extends BaseParser
 
     protected function parseQuery($parsedData)
     {
-        if(($pos = strpos($parsedData['request']['target'], '?')) === false){
-            $parsedData['query'] = array(
-                'path' => $parsedData['request']['target'],
-                'param' => array(),
+        if(($pos = strpos($parsedData['Request']['Target'], '?')) === false){
+            $parsedData['Query'] = array(
+                'Path' => $parsedData['Request']['Target'],
+                'Param' => array(),
             );
 
             return $parsedData;
         }
 
-        parse_str(substr($parsedData['request']['target'], $pos + 1), $result);
+        parse_str(substr($parsedData['Request']['Target'], $pos + 1), $result);
 
-        $parsedData['query'] = array(
-            'path' => substr($parsedData['request']['target'], 0, $pos),
-            'param' => $result,
+        $parsedData['Query'] = array(
+            'Path' => substr($parsedData['Request']['Target'], 0, $pos),
+            'Param' => $result,
         );
         return $parsedData;
     }
 
     protected function parseCookie($parsedData)
     {
-        if(isset($parsedData['header']['cookie'])){
-            $parsedData['header']['cookie'] = $this->parseSemicolonField($parsedData['header']['cookie']);
+        if(isset($parsedData['Header']['Cookie'])){
+            $parsedData['Header']['Cookie'] = $this->parseSemicolonField($parsedData['Header']['Cookie']);
         }
         return $parsedData;
     }
@@ -92,11 +92,11 @@ class RequestHeaderParser extends BaseParser
         foreach(explode("\r\n", $rawHeaders) as $index => $rawHeader){
             if($index == 0){
                 if(preg_match('/^(\w+)\s+(.+)\s+(\w+)\/(\d+\.\d+)$/i', $rawHeader, $match)){
-                    $headers['request'] = array(
-                        'method' => $match[1],
-                        'target' => $match[2],
-                        'protocol' => $match[3],
-                        'protocol-version' => $match[4],
+                    $headers['Request'] = array(
+                        'Method' => $match[1],
+                        'Target' => $match[2],
+                        'Protocol' => $match[3],
+                        'Protocol-Version' => $match[4],
                     );
                 }
                 continue;
@@ -104,8 +104,8 @@ class RequestHeaderParser extends BaseParser
             if(($pos = strpos($rawHeader, ':')) === false){
                 continue;
             }
-            $column = strtolower(trim(substr($rawHeader, 0, $pos)));
-            $headers['header'][$column] = trim(substr($rawHeader, $pos+1));
+            $column = trim(substr($rawHeader, 0, $pos));
+            $headers['Header'][$column] = trim(substr($rawHeader, $pos+1));
         }
         return $headers;
     }

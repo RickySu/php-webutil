@@ -83,7 +83,7 @@ class RequestParamParserTest extends BaseTestCase
         $parser->expects($this->once())
                 ->method('setParsed')
                 ->willReturn(null);
-        $this->setObjectProperty($parser, 'parseData', array('header' => array()));
+        $this->setObjectProperty($parser, 'parseData', array('Header' => array()));
         $this->invokeObjectMethod($parser, 'parse');
     }
 
@@ -100,7 +100,7 @@ class RequestParamParserTest extends BaseTestCase
                 ->method('setParsed')
                 ->willReturn(null);
         $this->setObjectProperty($parser, 'parseData', array(
-            'header' => array('content-length' => 5)
+            'Header' => array('Content-Length' => 5)
         ));
         $this->setObjectProperty($parser, 'rawData', '123456');
         $this->invokeObjectMethod($parser, 'parse');
@@ -119,9 +119,9 @@ class RequestParamParserTest extends BaseTestCase
                 ->method('parseContentType')
                 ->willReturn(false);
         $this->setObjectProperty($parser, 'parseData', array(
-            'header' => array(
-                'content-length' => 5,
-                'content-type' => '',
+            'Header' => array(
+                'Content-Length' => 5,
+                'Content-Type' => '',
             )
         ));
         $this->setObjectProperty($parser, 'rawData', '12345');
@@ -144,9 +144,9 @@ class RequestParamParserTest extends BaseTestCase
                 ->method('parseContent')
                 ->willReturn(true);
         $this->setObjectProperty($parser, 'parseData', array(
-            'header' => array(
-                'content-length' => 5,
-                'content-type' => '',
+            'Header' => array(
+                'Content-Length' => 5,
+                'Content-Type' => '',
             )
         ));
         $this->setObjectProperty($parser, 'rawData', '12345');
@@ -170,9 +170,9 @@ class RequestParamParserTest extends BaseTestCase
                 ->method('parseContent')
                 ->willReturn(false);
         $this->setObjectProperty($parser, 'parseData', array(
-            'header' => array(
-                'content-length' => 5,
-                'content-type' => '',
+            'Header' => array(
+                'Content-Length' => 5,
+                'Content-Type' => '',
             )
         ));
         $this->setObjectProperty($parser, 'rawData', '12345');
@@ -238,8 +238,8 @@ class RequestParamParserTest extends BaseTestCase
             null,
             strlen('raw_url_enc_data'),
         )));
-        $this->assertEquals('raw_url_enc_data', $this->getObjectAttribute($parser, 'parseData')['content']);
-        $this->assertEquals('url_dec_data', $this->getObjectAttribute($parser, 'parseData')['content-parsed']);
+        $this->assertEquals('raw_url_enc_data', $this->getObjectAttribute($parser, 'parseData')['Content']);
+        $this->assertEquals('url_dec_data', $this->getObjectAttribute($parser, 'parseData')['Content-Parsed']);
     }
 
     public function test_parseContent_jsonencode()
@@ -260,8 +260,8 @@ class RequestParamParserTest extends BaseTestCase
             'charset=utf-8',
             strlen('raw_json_enc_data'),
         )));
-        $this->assertEquals('raw_json_enc_data', $this->getObjectAttribute($parser, 'parseData')['content']);
-        $this->assertEquals('json_dec_data', $this->getObjectAttribute($parser, 'parseData')['content-parsed']);
+        $this->assertEquals('raw_json_enc_data', $this->getObjectAttribute($parser, 'parseData')['Content']);
+        $this->assertEquals('json_dec_data', $this->getObjectAttribute($parser, 'parseData')['Content-Parsed']);
     }
 
     public function test_parseContent_multipart()
@@ -282,7 +282,7 @@ class RequestParamParserTest extends BaseTestCase
             'boundary=1234567',
             strlen('raw_multipart_enc_data'),
         )));
-        $this->assertEquals('1234567', $this->getObjectAttribute($parser, 'parseData')['content-boundary']);
+        $this->assertEquals('1234567', $this->getObjectAttribute($parser, 'parseData')['Content-Boundary']);
     }
 
     public function test_parseContent_unknown()

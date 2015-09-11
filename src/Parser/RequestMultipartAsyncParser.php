@@ -56,10 +56,10 @@ class RequestMultipartAsyncParser extends BaseParser
 
     protected function parse()
     {
-        if(!isset($this->parseData['content-boundary'])){
+        if(!isset($this->parseData['Content-Boundary'])){
             return;
         }
-        $this->boundary = '--'.$this->parseData['content-boundary'];
+        $this->boundary = '--'.$this->parseData['Content-Boundary'];
         $this->boundarySize = strlen($this->boundary);
         $this->flushBufferData();
     }
