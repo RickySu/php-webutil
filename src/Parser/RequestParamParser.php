@@ -57,8 +57,9 @@ class RequestParamParser extends BaseParser
             return;
         }
 
-        $this->forwardHook($this->rawData);
         $this->setParsed();
+
+        $this->forwardHook($this->rawData);
     }
 
     protected function setParsed()

@@ -44,17 +44,18 @@ class RequestHeaderParser extends BaseParser
 
         unset($this->rawData);
 
-        if($data !== false){
-            $this->forwardHook($data);
-        }
-
         $parsedData = $this->parseCookie($this->parseQuery($this->parseHeader($rawHeaders)));
+
+        $this->parsed = true;
 
         if($this->callback){
             call_user_func($this->callback, $parsedData);
         }
 
-        $this->parsed = true;
+        if($data !== false){
+            $this->forwardHook($data);
+        }
+
         return true;
     }
 

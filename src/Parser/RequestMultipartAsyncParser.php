@@ -18,6 +18,7 @@ class RequestMultipartAsyncParser extends BaseParser
     protected $boundary;
     protected $boundaryInited = false;
     protected $boundaryheader = '';
+    protected $onParsedCallbackCalled = false;
 
     public function setOnMultipartDataCallback($callback)
     {
@@ -29,9 +30,6 @@ class RequestMultipartAsyncParser extends BaseParser
     {
         $this->callback = $prevHook->setOnParsedCallback(function($parseData){
             $this->parseData = $parseData;
-            if($this->callback){
-                call_user_func($this->callback, $this->parseData);
-            }
             $this->parse();
         });
     }
@@ -56,6 +54,12 @@ class RequestMultipartAsyncParser extends BaseParser
 
     protected function parse()
     {
+        if(!$this->onParsedCallbackCalled){
+            $this->onParsedCallbackCalled = true;
+            if($this->callback){
+                call_user_func($this->callback, $this->parseData);
+            }
+        }
         if(!isset($this->parseData['Content-Boundary'])){
             return;
         }
