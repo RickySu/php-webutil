@@ -236,16 +236,12 @@ class Response implements ResponseInterface
 
     public function prepare()
     {
-        if(!$this->prepared){
-            $this->prepared = true;
+        if(!$this->hasHeader('Content-Type')){
+            $this->withAddedHeader('Content-Type', 'text/html; charset=UTF-8');
+        }
 
-            if(!$this->hasHeader('Content-Type')){
-                $this->withAddedHeader('Content-Type', 'text/html; charset=UTF-8');
-            }
-
-            foreach($this->headers as $name => $value){
-                $this->headersString.="$name: $value\r\n";
-            }
+        foreach($this->headers as $name => $value){
+            $this->headersString.="$name: $value\r\n";
         }
         return $this;
     }
@@ -253,7 +249,7 @@ class Response implements ResponseInterface
     public function getOutput()
     {
         $this->prepare();
-       return
+        return
             "HTTP/{$this->protocolVersion} {$this->statusCode} {$this->reasonPhrase}\r\n".
             $this->headersString."\r\n".
             $this->body;
@@ -271,7 +267,7 @@ class Response implements ResponseInterface
 
     public function withKeepAlive()
     {
-        $this->withProtocolVersion(1.1);
+        $this->withProtocolVersion('1.1');
         $this->withHeader('Connection', 'Keep-Alive');
     }
 }
