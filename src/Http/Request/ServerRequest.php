@@ -107,4 +107,9 @@ class ServerRequest extends Request implements ServerRequestInterface
         unset($this->attributes[$name]);
     }
 
+    public function isKeepAlive()
+    {
+        return $this->getProtocolVersion() >= 1.1  && strtolower($this->getHeader('Connection')) == 'keep-alive';
+    }
+
 }

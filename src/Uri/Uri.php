@@ -20,24 +20,24 @@ class Uri implements UriInterface
     static public function createFromArray(array $array)
     {
         $filterterArray = array_merge(array(
-            'schema' => null,
-            'host' => null,
-            'port' => null,
-            'path' => null,
-            'query' => null,
-            'fragment' => null,
-            'user' => null,
-            'password' => null,
+            'Schema' => null,
+            'Host' => null,
+            'Port' => null,
+            'Path' => null,
+            'Query' => null,
+            'Fragment' => null,
+            'User' => null,
+            'Password' => null,
                 ), $array);
 
         $uri = new static();
-        $uri->withUserInfo($filterterArray['user'], $filterterArray['password']);
-        $uri->withScheme($filterterArray['schema']);
-        $uri->withQuery($filterterArray['query']);
-        $uri->withPort($filterterArray['port']);
-        $uri->withPath($filterterArray['path']);
-        $uri->withHost($filterterArray['host']);
-        $uri->withFragment($filterterArray['fragment']);
+        $uri->withUserInfo($filterterArray['User'], $filterterArray['Password']);
+        $uri->withScheme($filterterArray['Schema']);
+        $uri->withQuery($filterterArray['Query']);
+        $uri->withPort($filterterArray['Port']);
+        $uri->withPath($filterterArray['Path']);
+        $uri->withHost($filterterArray['Host']);
+        $uri->withFragment($filterterArray['Fragment']);
         return $uri;
     }
 
