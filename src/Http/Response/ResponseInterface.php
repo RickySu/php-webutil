@@ -67,4 +67,5 @@ interface ResponseInterface extends PSRResponseInterface
     const HTTP_NETWORK_AUTHENTICATION_REQUIRED = 511;                             // RFC6585
 
     public function getOutput();
+    public function __toString();
 }

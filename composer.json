@@ -3,11 +3,12 @@
     "description": "a collection of web utilities.",
     "require": {
         "psr/http-message": "^1.0",
-        "nikic/fast-route": "^0.6.0"
+        "nikic/fast-route": "^0.6.0",
+        "hhvm": ">=3.6"
     },
     "autoload": {
         "psr-4": {
-            "WebUtil\\": "src"
+            "WebUtil\\": "hacksrc"
         }
     },
     "license": "MIT",
