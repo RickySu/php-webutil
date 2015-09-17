@@ -153,8 +153,8 @@ class Uri implements UriInterface
 
     public function withUserInfo($user, $password = null)
     {
-        $this->user = $this->user;
-        $this->password = $this->password;
+        $this->user = $user;
+        $this->password = $password;
     }
 
 }

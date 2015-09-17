@@ -8,8 +8,12 @@
     },
     "autoload": {
         "psr-4": {
-            "WebUtil\\": "hacksrc"
+            "WebUtil\\Script\\": "script",
+            "WebUtil\\": "src"
         }
+    },
+    "scripts": {
+        "pre-autoload-dump": "WebUtil\\Script\\EnvCheck::preAutoloadDump"
     },
     "license": "MIT",
     "authors": [

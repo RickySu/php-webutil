@@ -1,4 +1,4 @@
-<?php
+<?hh
 namespace WebUtil\Http\Request;
 
 use Psr\Http\Message\RequestInterface;
@@ -7,23 +7,29 @@ use Psr\Http\Message\UriInterface;
 use WebUtil\Stream\ContentStream;
 use WebUtil\Uri\Uri;
 
-class Request implements RequestInterface
+class Request //implements RequestInterface
 {
-    protected $body;
-    protected $headers;
-    protected $request;
-    protected $uri;
-    protected $server;
-    protected $requestTarget;
+    protected ?StreamInterface $body;
+    protected array $headers = [];
+    protected array<string, string> $request = [];
+    protected ?UriInterface $uri;
+    protected array<string, string> $server = [];
+    protected string $requestTarget = '';
 
     /**
      *
      * @param array $array
      * @return Request
      */
-    static public function createFromArray(array $array, array $server = array())
+    static public function createFromArray(array $array, array $server = array()) :Request
     {
-        $request = new static();
+        $request = new self();
+        self::initFromArray($request, $array, $server);
+        return $request;
+    }
+
+    static protected function initFromArray(Request $request, array $array, array $server) :void
+    {
         $request->withRequestTarget($array['Request']['Target']);
         $request->withServer($server);
         $request->withUri(Uri::createFromArray(array(
@@ -38,105 +44,104 @@ class Request implements RequestInterface
         if(isset($array['Content'])){
             $request->withBody(new ContentStream($array['Content']));
         }
-        return $request;
     }
 
-    public function withServer($server)
+    public function withServer($server) :void
     {
-        $this->server = $server;
+        $this->server = (array) $server;
     }
 
-    public function getServer()
+    public function getServer() :array<string, string>
     {
         return $this->server;
     }
 
-    public function getBody()
+    public function getBody() :?StreamInterface
     {
         return $this->body;
     }
 
-    public function getHeader($name)
+    public function getHeader($name) :?string
     {
-        return isset($this->headers[$name]) ? $this->headers[$name] : null;
+        return isset($this->headers[(string) $name]) ? $this->headers[(string) $name] : null;
     }
 
-    public function getHeaderLine($name)
-    {   $header = isset($this->headers[$name]) ? $this->headers[$name] : null;
+    public function getHeaderLine($name) :?string
+    {   $header = isset($this->headers[(string) $name]) ? $this->headers[(string) $name] : null;
         if ($header === null) {
             return null;
         }
         return "$name: $header";
     }
 
-    public function getHeaders()
+    public function getHeaders() :array
     {
         return $this->headers;
     }
 
-    public function getMethod()
+    public function getMethod() :?string
     {
         return $this->request['Method'];
     }
 
-    public function getProtocolVersion()
+    public function getProtocolVersion() :?string
     {
         return $this->request['Protocol-Version'];
     }
 
-    public function getRequestTarget()
+    public function getRequestTarget() :?string
     {
         return $this->requestTarget;
     }
 
-    public function getUri()
+    public function getUri() :?UriInterface
     {
         return $this->uri;
     }
 
-    public function hasHeader($name)
+    public function hasHeader($name) :bool
     {
-        return isset($this->headers[$name]);
+        return isset($this->headers[(string) $name]);
     }
 
-    public function withAddedHeader($name, $value)
+    public function withAddedHeader($name, $value) :void
     {
-        $this->headers[$name] = $value;
+        $this->headers[(string) $name] = (string) $value;
     }
 
-    public function withBody(StreamInterface $body)
+    public function withBody(StreamInterface $body) :void
     {
         $this->body = $body;
     }
 
-    public function withHeader($name, $value)
+    public function withHeader($name, $value) :void
     {
-        $this->headers[$name] = $value;
+        $this->headers[(string) $name] = (string) $value;
     }
 
-    public function withMethod($method)
+    public function withMethod($method) :void
     {
-        $this->request['Method'] = $method;
+        $this->request['Method'] = (string) $method;
     }
 
-    public function withProtocolVersion($version)
+    public function withProtocolVersion($version) :void
     {
-        $this->request['Protocol-Version'] = $version;
+        $this->request['Protocol-Version'] = (string) $version;
     }
 
-    public function withRequestTarget($requestTarget)
+    public function withRequestTarget($requestTarget) :void
     {
-        $this->requestTarget = $requestTarget;
+        $this->requestTarget = (string) $requestTarget;
     }
 
-    public function withUri(UriInterface $uri, $preserveHost = false)
+    public function withUri(UriInterface $uri, $preserveHost = false) :void
     {
         $this->uri = $uri;
     }
 
-    public function withoutHeader($name)
+    public function withoutHeader($name) :void
     {
-        unset($this->headers[$name]);
+        unset($this->headers[(string) $name]);
     }
 
 }

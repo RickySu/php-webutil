@@ -18,7 +18,8 @@ class ServerRequest extends Request implements ServerRequestInterface
      */
     static public function createFromArray(array<string, array> $array, array $server = array()) :ServerRequest
     {
-        $request = parent::createFromArray($array, $server);
+        $request = new self();
+        parent::initFromArray($request, $array, $server);
         $request->withRequest($array['Request']);
         $request->withHeaders($array['Header']);
         $request->withQueryParams($array['Query']);
@@ -26,90 +27,90 @@ class ServerRequest extends Request implements ServerRequestInterface
         return $request;
     }
 
-    public function withRequest(array $request) :void
+    public function withRequest(array<string, string> $request) :void
     {
         $this->request = $request;
     }
 
-    public function withHeaders(array $headers)
+    public function withHeaders(array $headers) :void
     {
         $this->headers = $headers;
         $this->withCookieParams(isset($headers['Cookie'])?$headers['Cookie']:array());
     }
 
-    public function getAttribute($name, $default = null)
+    public function getAttribute($name, $default = null) :?string
     {
-        return isset($this->attributes[$name]) ? $this->attributes[$name] : $default;
+        return isset($this->attributes[(string) $name]) ? $this->attributes[(string) $name] : $default;
     }
 
-    public function getAttributes()
+    public function getAttributes() :array<string, string>
     {
         return $this->attributes;
     }
 
-    public function getCookieParams()
+    public function getCookieParams() :array<string, string>
     {
         return $this->cookies;
     }
 
-    public function getParsedBody()
+    public function getParsedBody() :?array<string, string>
     {
         return $this->parsedBody;
     }
 
-    public function getQueryParams()
+    public function getQueryParams() :?array<string, string>
     {
         return $this->query['Params']['Param'];
     }
 
-    public function getServerParams()
+    public function getServerParams() :?array<string, string>
     {
-
+        return $this->server;
     }
 
-    public function getUploadedFiles()
+    public function getUploadedFiles() :?array
     {
         return $this->files;
     }
 
-    public function withAttribute($name, $value)
+    public function withAttribute($name, $value) :void
     {
-        $this->attributes[$name] = $value;
+        $this->attributes[(string) $name] = (string) $value;
     }
 
-    public function withCookieParams(array $cookies)
+    public function withCookieParams(array $cookies) :void
     {
         $this->cookies = $cookies;
     }
 
-    public function withParsedBody($data)
+    public function withParsedBody($data) :void
     {
-        $this->parsedBody = $data;
+        $this->parsedBody = (array) $data;
     }
 
-    public function withQuery(array $query)
+    public function withQuery(array $query) :void
     {
         $this->query = $query;
     }
 
-    public function withQueryParams(array $query)
+    public function withQueryParams(array $query) :void
     {
         $this->query['Params'] = $query;
     }
 
-    public function withUploadedFiles(array $uploadedFiles)
+    public function withUploadedFiles(array $uploadedFiles) :void
     {
         $this->files = $uploadedFiles;
     }
 
-    public function withoutAttribute($name)
+    public function withoutAttribute($name) :void
     {
-        unset($this->attributes[$name]);
+        unset($this->attributes[(string) $name]);
     }
 
-    public function isKeepAlive()
+    public function isKeepAlive() :bool
     {
-        return $this->getProtocolVersion() >= 1.1  && strtolower($this->getHeader('Connection')) == 'keep-alive';
+        return (float) $this->getProtocolVersion() >= 1.1 && strtolower($this->getHeader('Connection')) == 'keep-alive';
     }
 
 }

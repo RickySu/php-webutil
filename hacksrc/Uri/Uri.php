@@ -1,4 +1,4 @@
-<?php
+<?hh
 
 namespace WebUtil\Uri;
 
@@ -7,17 +7,17 @@ use Psr\Http\Message\UriInterface;
 class Uri implements UriInterface
 {
 
-    protected $user;
-    protected $password;
-    protected $path;
-    protected $query;
-    protected $host;
-    protected $port;
-    protected $schema;
-    protected $fragment;
-    protected $uri;
+    protected ?string $user;
+    protected ?string $password;
+    protected ?string $path;
+    protected ?string $query;
+    protected ?string $host;
+    protected ?string $port;
+    protected ?string $schema;
+    protected ?string $fragment;
+    protected ?string $uri;
 
-    static public function createFromArray(array $array)
+    static public function createFromArray(array $array) :Uri
     {
         $filterterArray = array_merge(array(
             'Schema' => null,
@@ -30,7 +30,7 @@ class Uri implements UriInterface
             'Password' => null,
                 ), $array);
 
-        $uri = new static();
+        $uri = new self();
         $uri->withUserInfo($filterterArray['User'], $filterterArray['Password']);
         $uri->withScheme($filterterArray['Schema']);
         $uri->withQuery($filterterArray['Query']);
@@ -41,7 +41,7 @@ class Uri implements UriInterface
         return $uri;
     }
 
-    public function __toString()
+    public function __toString() :string
     {
         if ($this->uri === null) {
             $this->uri.=$this->schema . '://';
@@ -78,7 +78,7 @@ class Uri implements UriInterface
         return $this->uri;
     }
 
-    public function getAuthority()
+    public function getAuthority() :string
     {
         $authority = $this->getUserInfo() == '' ? '' : $this->getUserInfo() . '@';
         $authority.=$this->host;
@@ -86,75 +86,75 @@ class Uri implements UriInterface
         return $authority;
     }
 
-    public function getFragment()
+    public function getFragment() :?string
     {
         return $this->fragment;
     }
 
-    public function getHost()
+    public function getHost() :?string
     {
         return $this->host;
     }
 
-    public function getPath()
+    public function getPath() :?string
     {
         return $this->path;
     }
 
-    public function getPort()
+    public function getPort() :?string
     {
         return $this->port;
     }
 
-    public function getQuery()
+    public function getQuery() :?string
     {
         return $this->query;
     }
 
-    public function getScheme()
+    public function getScheme() :?string
     {
         return $this->schema;
     }
 
-    public function getUserInfo()
+    public function getUserInfo() :string
     {
         return urlencode($this->user) . ($this->password === null ? '' : (':' . urlencode($this->password)));
     }
 
-    public function withFragment($fragment)
+    public function withFragment($fragment) :void
     {
-        $this->fragment = $fragment;
+        $this->fragment = (string) $fragment;
     }
 
-    public function withHost($host)
+    public function withHost($host) :void
     {
-        $this->host = $host;
+        $this->host = (string) $host;
     }
 
-    public function withPath($path)
+    public function withPath($path) :void
     {
-        $this->path = $path;
+        $this->path = (string) $path;
     }
 
-    public function withPort($port)
+    public function withPort($port) :void
     {
-        $this->port = $port;
+        $this->port = (string) $port;
     }
 
-    public function withQuery($query)
+    public function withQuery($query) :void
     {
-        $this->query = $query;
+        $this->query = (string) $query;
     }
 
-    public function withScheme($scheme)
+    public function withScheme($scheme) :void
     {
-        $this->schema = $scheme;
+        $this->schema = (string) $scheme;
     }
 
-    public function withUserInfo($user, $password = null)
+    public function withUserInfo($user, $password = null) :void
     {
-        $this->user = $this->user;
-        $this->password = $this->password;
+        $this->user = (string) $user;
+        $this->password = (string) $password;
     }
 
 }
