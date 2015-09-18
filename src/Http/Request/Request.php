@@ -4,7 +4,7 @@ namespace WebUtil\Http\Request;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
-use WebUtil\Stream\ContentStream;
+use WebUtil\Stream\SimpleStream;
 use WebUtil\Uri\Uri;
 
 class Request implements RequestInterface
@@ -36,7 +36,7 @@ class Request implements RequestInterface
         $request->withServer($server);
         $request->withRequestTarget($array['Request']['Target']);
         if(isset($array['Content'])){
-            $request->withBody(new ContentStream($array['Content']));
+            $request->withBody(new SimpleStream($array['Content']));
         }
         return $request;
     }

@@ -1,17 +1,17 @@
-<?php
+<?hh
 namespace WebUtil\Http\Response;
 
 use Psr\Http\Message\ResponseInterface;
 
 class Response implements ResponseInterface
 {
-    protected $protocolVersion = '1.0';
-    protected $headers = [];
-    protected $headersString;
-    protected $body;
-    protected $reasonPhrase;
-    protected $statusCode;
-    protected $prepared = false;
+    protected string $protocolVersion = '1.0';
+    protected array<string, string> $headers = [];
+    protected string $headersString = '';
+    protected string $body = '';
+    protected string $reasonPhrase = '';
+    protected int $statusCode = 200;
+    protected bool $prepared = false;
 
    /**
      * Status codes translation table.
@@ -24,7 +24,7 @@ class Response implements ResponseInterface
      *
      * @var array
      */
-    public static $statusTexts = array(
+    public static array<int, string> $statusTexts = array(
         100 => 'Continue',
         101 => 'Switching Protocols',
         102 => 'Processing',            // RFC2518
@@ -87,97 +87,97 @@ class Response implements ResponseInterface
         511 => 'Network Authentication Required',                             // RFC6585
     );
 
-    public function __construct($content = '', $status = 200, $headers = array())
+    public function __construct($content = '', $status = 200, $headers = array()) :void
     {
-        $this->headers = $headers;
-        $this->withBodyRaw($content);
-        $this->withStatus($status);
+        $this->headers = (array)$headers;
+        $this->withBodyRaw((string)$content);
+        $this->withStatus((int)$status);
     }
 
-    public function getBody()
+    public function getBody() :SimpleStream
     {
         return new SimpleStream($this->body);
     }
 
-    public function getHeader($name)
+    public function getHeader($name) :?string
     {
-        return isset($this->headers[$name]) ? $this->headers[$name] : null;
+        return isset($this->headers[(string)$name]) ? $this->headers[(string)$name] : null;
     }
 
-    public function getHeaderLine($name)
+    public function getHeaderLine($name) :?string
     {
-        $header = isset($this->headers[$name]) ? $this->headers[$name] : null;
+        $header = isset($this->headers[(string)$name]) ? $this->headers[(string)$name] : null;
         if ($header === null) {
             return null;
         }
         return "$name: $header";
     }
 
-    public function getHeaders()
+    public function getHeaders() :array<string, string>
     {
         return $this->headers;
     }
 
-    public function getProtocolVersion()
+    public function getProtocolVersion() :string
     {
         return $this->protocolVersion;
     }
 
-    public function getReasonPhrase()
+    public function getReasonPhrase() :string
     {
         return $this->reasonPhrase;
     }
 
-    public function getStatusCode()
+    public function getStatusCode() :int
     {
         return $this->statusCode;
     }
 
-    public function hasHeader($name)
+    public function hasHeader($name) :bool
     {
-        return isset($this->headers[$name]);
+        return isset($this->headers[(string)$name]);
     }
 
-    public function withAddedHeader($name, $value)
+    public function withAddedHeader($name, $value) :void
     {
-        $this->headers[$name] = $value;
+        $this->headers[(string)$name] = (string) $value;
     }
 
-    public function withBodyRaw($body)
+    public function withBodyRaw(string $body) :void
     {
         $this->body = $body;
         $this->withAddedHeader('Content-Length', strlen($body));
     }
 
-    public function withBody(\Psr\Http\Message\StreamInterface $body)
+    public function withBody(\Psr\Http\Message\StreamInterface $body) :void
     {
-        $this->withBodyRaw($body->getContents());
+        $this->withBodyRaw((string) $body->getContents());
     }
 
-    public function withHeader($name, $value)
+    public function withHeader($name, $value) :void
     {
-        $this->headers[$name] = $value;
+        $this->headers[(string) $name] = (string) $value;
     }
 
-    public function withProtocolVersion($version)
+    public function withProtocolVersion($version) :void
     {
-        $this->protocolVersion = $version;
+        $this->protocolVersion = (string) $version;
     }
 
-    public function withStatus($code, $reasonPhrase = '')
+    public function withStatus($code, $reasonPhrase = '') :void
     {
-        $this->statusCode = $code;
+        $this->statusCode = (int) $code;
         if($reasonPhrase === ''){
-            $this->reasonPhrase = static::$statusTexts[$code];
+            $this->reasonPhrase = static::$statusTexts[(int) $code];
         }
     }
 
-    public function withoutHeader($name)
+    public function withoutHeader($name) :void
     {
-        unset($this->headers[$name]);
+        unset($this->headers[(string) $name]);
     }
 
-    public function prepare()
+    public function prepare() :void
     {
         if(!$this->hasHeader('Content-Type')){
             $this->withAddedHeader('Content-Type', 'text/html; charset=UTF-8');
@@ -186,26 +186,25 @@ class Response implements ResponseInterface
         foreach($this->headers as $name => $value){
             $this->headersString.="$name: $value\r\n";
         }
-        return $this;
     }
 
-    public function __toString()
+    public function __toString() :string
     {
         return $this->getOutput();
     }
 
-    public function withoutKeepAlive()
+    public function withoutKeepAlive() :void
     {
         $this->withoutHeader('Connection');
     }
 
-    public function withKeepAlive()
+    public function withKeepAlive() :void
     {
         $this->withProtocolVersion('1.1');
         $this->withHeader('Connection', 'Keep-Alive');
     }
 
-    public function getOutput()
+    public function getOutput() :string
     {
         $this->prepare();
         return

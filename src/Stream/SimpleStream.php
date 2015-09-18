@@ -3,14 +3,13 @@ namespace WebUtil\Stream;
 
 use  Psr\Http\Message\StreamInterface;
 
-class ContentStream implements StreamInterface
+class SimpleStream implements StreamInterface
 {
     protected $content;
-    private $seekpos = 0;
 
     public function __construct($content = '')
     {
-        $this->content = (string)$content;
+        $this->content = $content;
     }
 
     public function __toString()
@@ -29,7 +28,7 @@ class ContentStream implements StreamInterface
 
     public function eof()
     {
-        return $this->seekpos >= strlen($this->content);
+        return false;
     }
 
     public function getContents()
@@ -49,12 +48,12 @@ class ContentStream implements StreamInterface
 
     public function isReadable()
     {
-        return true;
+        return false;
     }
 
     public function isSeekable()
     {
-        return true;
+        return false;
     }
 
     public function isWritable()
@@ -62,46 +61,23 @@ class ContentStream implements StreamInterface
         return false;
     }
 
-    public function read($length)
+    public function read(int $length)
     {
-        if($this->eof()){
-            return null;
-        }
-
-        if($this->seekpos + $length > $this->getSize()){
-            $length = $this->getSize() - $this->seekpos;
-        }
-
-        $read = substr($this->content, $this->seekpos, $length);
-        $this->seekpos+=$length;
-        return $read;
+        return null;
     }
 
     public function rewind()
     {
-        $this->seek(0);
     }
 
     public function seek($offset, $whence = SEEK_SET)
     {
-        switch($whence){
-            case SEEK_SET:
-                $this->seekpos = $offset;
-                break;
-            case SEEK_CUR:
-            default:
-                $this->seekpos+=$offset;
-                if($this->eof()){
-                    $this->seekpos = strlen($this->content) - 1;
-                }
-        }
-
-        return $this->seekpos;
+        return -1;
     }
 
     public function tell()
     {
-        return $this->seekpos;
+        return -1;
     }
 
     public function write($string)
